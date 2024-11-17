@@ -1,0 +1,2 @@
+seed
+private_key
