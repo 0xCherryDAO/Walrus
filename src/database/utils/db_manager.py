@@ -6,6 +6,7 @@ from typing import (
 )
 
 from sqlalchemy import select, delete
+from sqlalchemy.sql import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from loguru import logger
@@ -125,3 +126,15 @@ class DataBaseUtils:
             tasks = result.scalars().all()
 
         return tasks
+
+    async def get_completed_wallets_count(self) -> int:
+        async with self.session() as session:
+            query = select(func.count()).select_from(WorkingWallets).filter_by(status="completed")
+            result = await session.execute(query)
+            return result.scalar()
+
+    async def get_total_wallets_count(self) -> int:
+        async with self.session() as session:
+            query = select(func.count()).select_from(WorkingWallets)
+            result = await session.execute(query)
+            return result.scalar()

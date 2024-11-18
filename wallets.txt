@@ -1,2 +1,3 @@
 seed
+or
 private_key

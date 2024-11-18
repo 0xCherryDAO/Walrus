@@ -24,6 +24,11 @@ class SuiAccount:
                 rpc_url=rpc,
                 prv_keys=[key_format]
             )
+        elif mnemonic.startswith('suiprivkey'):
+            self.config = SuiConfig.user_config(
+                rpc_url=rpc,
+                prv_keys=[mnemonic]
+            )
         else:
             self.config = SuiConfig.user_config(rpc_url=rpc)
             self.config.recover_keypair_and_address(

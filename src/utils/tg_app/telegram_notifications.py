@@ -33,6 +33,9 @@ class TGApp(RequestClient):
         uncompleted_tasks_list = "\n".join(
             f"- {task.task_name}" for task in uncompleted_tasks) or "All tasks completed."
 
+        completed_wallets_count = await self.__db_utils.get_completed_wallets_count()
+        total_wallets_count = await self.__db_utils.get_total_wallets_count()
+
         completed_tasks_list = escape_markdown_v2(completed_tasks_list)
         uncompleted_tasks_list = escape_markdown_v2(uncompleted_tasks_list)
 
@@ -44,7 +47,9 @@ class TGApp(RequestClient):
             f"❌ **Uncompleted Tasks:** {len(uncompleted_tasks)}\n\n"
             f"🔍 **Details:**\n\n"
             f"**Completed Tasks:**\n{completed_tasks_list}\n\n"
-            f"**Uncompleted Tasks:**\n{uncompleted_tasks_list}"
+            f"**Uncompleted Tasks:**\n{uncompleted_tasks_list}\n\n"
+            f"📊 **Overall Progress:**\n"
+            f"**Completed Wallets:** {completed_wallets_count}/{total_wallets_count}"
         )
 
         return text
