@@ -1,13 +1,13 @@
-MOBILE_PROXY = False
-ROTATE_IP = False
+MOBILE_PROXY = False  # True/False
+ROTATE_IP = False  # True/False
 
-RETRIES = 3
-PAUSE_BETWEEN_RETRIES = 10
+RETRIES = 3  # Number of attempts in case of error
+PAUSE_BETWEEN_RETRIES = 10  # Pause between them
 
 SUI_TESTNET_RPC = 'https://fullnode.testnet.sui.io:443'
 SUI_MAINNET_RPC = 'https://fullnode.mainnet.sui.io:443'
 
-BLOCK_VISION_API_KEY = None  # API_KEY (str) | None (https://dashboard.blockvision.org/overview)
+BLOCK_VISION_API_KEY = None  # None or 'API_KEY' (https://dashboard.blockvision.org/overview)
 
 TG_BOT_TOKEN = None  # str
 TG_USER_ID = None  # int
@@ -31,12 +31,12 @@ BUY_WALRUS_NFT = False  # Walrus Explorer NFT | MAINNET
 
 # --- Testnet activities ---#
 class SwapSettings:
-    swap_percentage = [0.8, 0.9]
+    swap_percentage = [0.8, 0.9]  # 0.1 is 10% | 0.25 is 25% etc...
 
 
 class LiquiditySettings:
     use_percentage = False
-    stake_percentage = [0.4, 0.5]
+    stake_percentage = [0.4, 0.5]  # 0.1 is 10% | 0.25 is 25% etc...
     stake_all_balance = True
 
 

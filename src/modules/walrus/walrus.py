@@ -36,7 +36,7 @@ class Walrus(ABCSwap, ABCLiquidity):
 
     def __str__(self) -> str:
         if self.swap_config:
-            return f'[{self.wallet_address}] | Swapping {round(self.swap_config.swap_percentage, 3)}% SUI => WAL'
+            return f'[{self.wallet_address}] | Swapping {round(self.swap_config.swap_percentage * 100, 3)}% SUI => WAL'
         elif self.liquidity_config:
             return f'[{self.wallet_address}] | Staking WAL...'
 
