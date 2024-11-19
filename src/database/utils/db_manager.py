@@ -1,4 +1,5 @@
 import types
+import asyncio
 
 from typing import (
     Optional,
@@ -16,6 +17,8 @@ from src.database.models import engine, WorkingWallets, WalletsTasks
 
 
 class DataBaseUtils:
+    db_lock = asyncio.Lock()
+
     def __init__(
             self,
             manager_config: DataBaseManagerConfig
@@ -45,41 +48,42 @@ class DataBaseUtils:
             status: str,
             task_name: str | None = None
     ) -> None:
-        async with self.session() as session:
-            query = select(self.table_object).filter_by(mnemonic=mnemonic)
+        async with self.db_lock:
+            async with self.session() as session:
+                query = select(self.table_object).filter_by(mnemonic=mnemonic)
 
-            if task_name and self.table_object is WalletsTasks:
-                query = query.filter_by(task_name=task_name)
+                if task_name and self.table_object is WalletsTasks:
+                    query = query.filter_by(task_name=task_name)
 
-            result = await session.execute(query)
-            existing_entry = result.scalars().first()
+                result = await session.execute(query)
+                existing_entry = result.scalars().first()
 
-            if existing_entry:
-                existing_entry.status = status
-                logger.info(f'🔄 | Updated existing entry '
-                            f'with private_key={mnemonic[:4]}...{mnemonic[-4:]} and task_name={task_name}')
-            else:
-                transaction = self.table_object(
-                    mnemonic=mnemonic,
-                    status=status
-                )
-                if self.table_object is WorkingWallets:
-                    transaction.proxy = proxy
-                    transaction.recipient = recipient
+                if existing_entry:
+                    existing_entry.status = status
+                    logger.info(f'🔄 | Updated existing entry '
+                                f'with private_key={mnemonic[:4]}...{mnemonic[-4:]} and task_name={task_name}')
+                else:
+                    transaction = self.table_object(
+                        mnemonic=mnemonic,
+                        status=status
+                    )
+                    if self.table_object is WorkingWallets:
+                        transaction.proxy = proxy
+                        transaction.recipient = recipient
 
-                if self.table_object is WalletsTasks:
-                    transaction.task_name = task_name
+                    if self.table_object is WalletsTasks:
+                        transaction.task_name = task_name
 
-                session.add(transaction)
-                logger.success(
-                    f'✔️ | Successfully added new entry to DataBase '
-                    f'with private_key={mnemonic[:4]}...{mnemonic[-4:]} and task_name={task_name}'
-                )
+                    session.add(transaction)
+                    logger.success(
+                        f'✔️ | Successfully added new entry to DataBase '
+                        f'with private_key={mnemonic[:4]}...{mnemonic[-4:]} and task_name={task_name}'
+                    )
 
-            await session.commit()
+                await session.commit()
 
-            if self.table_object is WalletsTasks and status == 'completed':
-                await self.check_and_update_working_wallets(mnemonic, session)
+                if self.table_object is WalletsTasks and status == 'completed':
+                    await self.check_and_update_working_wallets(mnemonic, session)
 
     async def get_tasks_info(self, mnemonic: str) -> tuple[list[str], list[str]]:
         completed_tasks = await self.get_wallet_completed_tasks(mnemonic)
