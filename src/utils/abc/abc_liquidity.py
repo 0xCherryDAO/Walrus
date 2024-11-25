@@ -43,7 +43,7 @@ class ABCLiquidity(ABC, SuiAccount, RequestClient):
         )
         if number_of_objects >= 3:
             merge_to_object_id = objects[0]
-            if self.liquidity_config.token == 'SUI':
+            if self.liquidity_config.token.name == 'SUI':
                 gas_object_id = objects[1]
                 objects.remove(gas_object_id)
             else:
